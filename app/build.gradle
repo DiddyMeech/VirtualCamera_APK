@@ -3,6 +3,7 @@ plugins {
 }
 
 android {
+    namespace 'virtual.camera.app'
     compileSdk 31
 
     defaultConfig {
