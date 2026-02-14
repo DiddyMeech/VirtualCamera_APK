@@ -19,3 +19,15 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Keep Xposed related classes
+-keep class de.robv.android.xposed.** { *; }
+-keep class com.diddymeech.vcam.** { *; }
+
+# Keep MediaCodec and Surface related classes
+-keep class android.media.MediaCodec { *; }
+-keep class android.view.Surface { *; }
+-keep class android.graphics.SurfaceTexture { *; }
+
+# Keep OpenGL ES related classes
+-keep class android.opengl.* { *; }
