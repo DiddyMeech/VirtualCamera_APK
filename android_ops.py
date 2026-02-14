@@ -137,20 +137,24 @@ def provision_zero_day():
             push_result = run_adb(f"push {local_file} /sdcard/{module['filename']}")
             print(f"   Push result: {push_result}")
             
-            # Install via Magisk
-            install_result = run_adb(f"shell su -c magisk --install-module /sdcard/{module['filename']}")
-            print(f"   Installation result: {install_result}")
-            
-            # Check if installation was successful before cleaning up
-            if "success" in install_result.lower() or "installed" in install_result.lower():
-                # Clean up the temporary file after successful installation
-                try:
-                    os.remove(local_file)
-                    print(f"   Cleaned up temporary file: {module['filename']}")
-                except Exception as e:
-                    print(f"[!] Failed to clean up temp file {module['filename']}: {e}")
+            # Check if push was successful before installing
+            if "bytes" in push_result.lower() or "failed" not in push_result.lower():
+                # Install via Magisk
+                install_result = run_adb(f"shell su -c magisk --install-module /sdcard/{module['filename']}")
+                print(f"   Installation result: {install_result}")
+                
+                # Check if installation was successful before cleaning up
+                if "success" in install_result.lower() or "installed" in install_result.lower():
+                    # Clean up the temporary file after successful installation
+                    try:
+                        os.remove(local_file)
+                        print(f"   Cleaned up temporary file: {module['filename']}")
+                    except Exception as e:
+                        print(f"[!] Failed to clean up temp file {module['filename']}: {e}")
+                else:
+                    print(f"   [!] Installation may have failed for {module['name']}")
             else:
-                print(f"   [!] Installation may have failed for {module['name']}")
+                print(f"   [!] Push failed for {module['name']}")
         else:
             print(f"   Failed to download {module['name']}: {local_file}")
     
@@ -161,8 +165,12 @@ def provision_zero_day():
         push_result = run_adb(f"push {vcam_apk} /sdcard/VCam-Debug.apk")
         print(f"   Push result: {push_result}")
         
-        install_result = run_adb("shell pm install -r /sdcard/VCam-Debug.apk")
-        print(f"   Installation result: {install_result}")
+        # Check if push was successful before installing
+        if "bytes" in push_result.lower() or "failed" not in push_result.lower():
+            install_result = run_adb("shell pm install -r /sdcard/VCam-Debug.apk")
+            print(f"   Installation result: {install_result}")
+        else:
+            print(f"   [!] Failed to push VCam APK to device")
     else:
         print(f"[!] VCam APK not found at {vcam_apk}")
     
