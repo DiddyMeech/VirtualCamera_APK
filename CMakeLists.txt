@@ -9,13 +9,14 @@ if(NOT ANDROID)
     message(WARNING "This project is intended for Android NDK build.")
 endif()
 
-# Includes
+# Includes - Adding the missing system/core/include directory
 include_directories(
     src
     # AOSP Headers (Downloaded by CI)
     ${CMAKE_CURRENT_SOURCE_DIR}/aosp_headers/libhardware/include
     ${CMAKE_CURRENT_SOURCE_DIR}/aosp_headers/system/media/camera/include
     ${CMAKE_CURRENT_SOURCE_DIR}/aosp_headers/frameworks/av/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/aosp_headers/system/core/include
     # Mock Headers for libcutils
     ${CMAKE_CURRENT_SOURCE_DIR}/mock_cutils
 )
