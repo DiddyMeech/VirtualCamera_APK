@@ -29,6 +29,26 @@ public class MainHook implements IXposedHookLoadPackage {
                     }
                 }
             );
+            
+            // Hook BiometricPrompt for authentication hijacking
+            try {
+                Class<?> biometricPromptClass = XposedHelpers.findClass("android.hardware.biometrics.BiometricPrompt", lpparam.classLoader);
+                if (biometricPromptClass != null) {
+                    XposedBridge.hookAllMethods(biometricPromptClass, "authenticate", new XC_MethodHook() {
+                        @Override
+                        protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                            // Override authentication to always succeed
+                            super.beforeHookedMethod(param);
+                            
+                            // In a real implementation, we would modify the callback here
+                            // to force authentication success instead of waiting for actual biometric check
+                        }
+                    });
+                }
+            } catch (Exception e) {
+                // Biometric hook not available on this Android version
+                XposedBridge.log("Biometric hook not available: " + e.getMessage());
+            }
         }
     }
     

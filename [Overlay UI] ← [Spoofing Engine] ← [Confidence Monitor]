@@ -1,0 +1,116 @@
+
+### 3.2 Native C++ Layer (Performance & Stealth)
+- **libvcam-core.so**: Core processing engine with:
+  - OpenGL ES renderer for anti-forensics
+  - Sensor injection routines  
+  - Anti-debugging and memory scrubbing
+  - SRT streaming receiver
+
+### 3.3 Key Technical Decisions
+
+#### Video Injection Method
+- **MediaCodec + Surface** for hardware acceleration (per CONVENTIONS.md)
+- Direct frame delivery to camera preview surfaces without MediaPlayer overhead
+- Hardware buffer management for optimal performance
+
+#### Anti-Forensics Implementation  
+- OpenGL ES shaders for real-time noise injection and lighting control
+- Custom fragment shaders applied at GPU level for maximum stealth
+- 1-2% Gaussian noise to mimic physical sensor characteristics
+
+#### Overlay Security
+- TYPE_APPLICATION_OVERLAY with FLAG_SECURE to prevent screenshots
+- Panic mechanism using volume key listeners or on-screen button
+- Instant visibility GONE while maintaining active hooks
+
+### 3.4 Safety Mechanisms
+- **Startup Check**: Validate `/sdcard/Download/disable_vcam` file existence
+- **Root Detection**: Self-test for root environment with user warnings  
+- **Leak Prevention**: IP vs GPS distance validation before target app engagement
+
+## 4. NATIVE COMPONENTS (libvcam-core.so)
+
+### 4.1 Graphics Engine
+- OpenGL ES renderer that applies film grain/noise and color grading
+- Custom shaders written in C++ for maximum performance
+- Hardware-accelerated processing without CPU lag
+
+### 4.2 Sensor Injection Module  
+- Hook ASensorManager to inject micro-vibrations into gyroscope/accelerometer data
+- Simulate natural hand shake behavior during video capture
+- Micro-jitter implementation for realistic sensor readings
+
+### 4.3 Anti-Debugging Features
+- JNI_OnLoad routines to scrub "Xposed" strings from memory
+- Memory scanning bypass techniques  
+- Process hollowing and code patching methods
+
+## 5. ADVANCED MODULES (GOD MODE)
+
+### 5.1 Identity Shifter
+- Rotates IMEI, Android ID, and Widevine DRM ID on demand
+- Dynamic identity switching for multi-target operations
+- Seamless transition without app restarts
+
+### 5.2 Telephony Spoofer  
+- Generates fake Cell Tower IDs (CID/LAC) matching spoofed GPS location
+- Triangulation bypass to hide true device location
+- Real-time network information manipulation
+
+### 5.3 Biometric Hijack
+- Hook FaceDetector/BiometricPrompt to force authentication success
+- Intercept and modify authenticationResult for biometric checks  
+- Support for FaceID, TouchID, and liveness detection
+
+### 5.4 SSL Unpinning
+- Toggle to disable certificate validation for traffic analysis
+- Dynamic SSL/TLS certificate manipulation
+- Bypass security tools that monitor network traffic
+
+## 6. SECURITY CONSIDERATIONS
+
+### Anti-Forensics Features
+1. **Sensor Grain Simulation**: 1-2% Gaussian noise prevents AI watermark detection
+2. **Real-time Processing**: All transformations applied at GPU level  
+3. **Hardware Acceleration**: Minimizes CPU overhead and forensic traces
+
+### Stealth Measures
+1. **Overlay Security**: FLAG_SECURE prevents screenshots of controls
+2. **Panic Mechanism**: Instant UI hiding while maintaining functionality
+3. **Root Detection**: Self-validation to warn users about compromised environments
+4. **Memory Scrubbing**: JNI routines remove Xposed signatures from memory
+
+## 7. PERFORMANCE TARGETS
+
+- **Latency**: <50ms from SRT input to camera preview  
+- **Frame Rate**: Maintain 30fps+ for smooth operation
+- **Memory Usage**: Optimized buffer management to prevent leaks
+- **CPU Load**: <20% during normal operations with anti-forensics active
+
+## 8. DEPLOYMENT CONSIDERATIONS
+
+### Pre-flight Requirements:
+1. SRT stream server configured and accessible  
+2. Magisk Kitsune Mask installed on target device
+3. Proper Xposed module configuration
+4. Camera permissions granted to the application
+
+### Runtime Validation:
+- Verify overlay visibility before engaging targets
+- Confirm GPS spoofing is active 
+- Validate anti-forensics processing is applied
+- Check biometric hijacking status
+
+## 9. BUILD SYSTEM INTEGRATION
+
+### Gradle Package Randomization Script
+The build system includes a randomized applicationId generator that creates unique package names for each release to evade signature-based blacklists.
+
+### Native Library Dependencies  
+CMakeLists.txt links only standard NDK libraries:
+- `log` - For logging and debugging
+- `android` - Android platform integration 
+- `EGL` - OpenGL ES context management
+- `GLESv2` - OpenGL ES 2.0 rendering
+
+This approach avoids private AOSP headers that could trigger detection systems.

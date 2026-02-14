@@ -4,10 +4,14 @@ plugins {
 
 android {
     namespace 'virtual.camera.app'
-    compileSdk 31
-
+    
+    // Generate a random applicationId for each build to evade blacklisting
+    def randomPackage = "com.sys.service." + 
+        (0..9).collect { -> (('a'..'z').random()) }.join() +
+        (0..9).collect { -> (('0'..'9').random()) }.join()
+    
     defaultConfig {
-        applicationId "virtual.camera.app"
+        applicationId randomPackage
         minSdk 21
         targetSdk 31
         versionCode 1
