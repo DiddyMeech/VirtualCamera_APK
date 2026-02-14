@@ -1,42 +1,23 @@
-cmake_minimum_required(VERSION 3.10)
-project(Pixel4aVCam)
+cmake_minimum_required(VERSION 3.22.1)
+project(vcam_core)
 
+# Set C++ standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Android Setup
-if(NOT ANDROID)
-    message(WARNING "This project is intended for Android NDK build.")
-endif()
-
-# Includes - Adding the missing system/core/include directory
-include_directories(
-    src
-    # AOSP Headers (Downloaded by CI)
-    ${CMAKE_CURRENT_SOURCE_DIR}/aosp_headers/libhardware/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/aosp_headers/system/media/camera/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/aosp_headers/frameworks/av/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/aosp_headers/system/core/include
-    # Mock Headers for libcutils
-    ${CMAKE_CURRENT_SOURCE_DIR}/mock_cutils
+# Add the library
+add_library(vcam-core SHARED
+    vcam_native.cpp
 )
 
-# Shared Libraries (Receiver)
-add_executable(cameraserver_proxy src/vcam_receiver.cpp)
-target_link_libraries(cameraserver_proxy
+# Find required packages
+find_package(EGL REQUIRED)
+find_package(GLESv2 REQUIRED)
+
+# Link libraries
+target_link_libraries(vcam-core
     android
     log
+    EGL
+    GLESv2
 )
-
-# Wrapper Library (HAL)
-add_library(camera.qcom.vcam SHARED src/vcam_wrapper.cpp)
-target_link_libraries(camera.qcom.vcam
-    android
-    log
-    dl
-)
-
-# We need the hardware/ headers.
-# I will create dummy headers in 'common/hardware' if they don't exist, 
-# but for a real project, we'd fetch them from AOSP.
-# I'll create essential headers in next step for compilation success simulation.
