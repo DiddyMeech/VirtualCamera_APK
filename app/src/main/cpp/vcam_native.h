@@ -1,6 +1,8 @@
 #ifndef VCAM_NATIVE_H
 #define VCAM_NATIVE_H
 
+#include <jni.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
