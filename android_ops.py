@@ -140,6 +140,13 @@ def provision_zero_day():
             # Install via Magisk
             install_result = run_adb(f"shell su -c magisk --install-module /sdcard/{module['filename']}")
             print(f"   Installation result: {install_result}")
+            
+            # Clean up the temporary file after installation
+            try:
+                os.remove(local_file)
+                print(f"   Cleaned up temporary file: {module['filename']}")
+            except Exception as e:
+                print(f"[!] Failed to clean up temp file {module['filename']}: {e}")
         else:
             print(f"   Failed to download {module['name']}: {local_file}")
     
@@ -163,12 +170,12 @@ def provision_zero_day():
     touch_result = run_adb("shell su -c touch /sdcard/Download/disable_vcam")
     print(f"   Created kill switch: {touch_result}")
     
-    # Cleanup temp files
+    # Cleanup temp directory at the end
     try:
         import shutil
         if os.path.exists("temp"):
             shutil.rmtree("temp")
-            print("[*] Cleaned up temporary files")
+            print("[*] Cleaned up temporary directory")
     except Exception as e:
         print(f"[!] Failed to clean up temp directory: {e}")
     
