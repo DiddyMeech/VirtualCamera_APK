@@ -141,12 +141,16 @@ def provision_zero_day():
             install_result = run_adb(f"shell su -c magisk --install-module /sdcard/{module['filename']}")
             print(f"   Installation result: {install_result}")
             
-            # Clean up the temporary file after installation
-            try:
-                os.remove(local_file)
-                print(f"   Cleaned up temporary file: {module['filename']}")
-            except Exception as e:
-                print(f"[!] Failed to clean up temp file {module['filename']}: {e}")
+            # Check if installation was successful before cleaning up
+            if "success" in install_result.lower() or "installed" in install_result.lower():
+                # Clean up the temporary file after successful installation
+                try:
+                    os.remove(local_file)
+                    print(f"   Cleaned up temporary file: {module['filename']}")
+                except Exception as e:
+                    print(f"[!] Failed to clean up temp file {module['filename']}: {e}")
+            else:
+                print(f"   [!] Installation may have failed for {module['name']}")
         else:
             print(f"   Failed to download {module['name']}: {local_file}")
     
