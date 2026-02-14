@@ -77,6 +77,12 @@ def optimize_for_vcam():
 def provision_zero_day():
     print("[*] Starting Zero-Day Device Provisioning...")
     
+    # Check if device is connected
+    devices = run_adb("devices")
+    if "device" not in devices:
+        print("[!] No Android device found. Please connect your device via USB and enable Developer Options.")
+        return
+    
     # 1. Sanitize - Uninstall detection apps
     print("\n[*] Step 1: Sanitizing device...")
     detection_apps = [
@@ -156,6 +162,15 @@ def provision_zero_day():
     
     touch_result = run_adb("shell su -c touch /sdcard/Download/disable_vcam")
     print(f"   Created kill switch: {touch_result}")
+    
+    # Cleanup temp files
+    try:
+        import shutil
+        if os.path.exists("temp"):
+            shutil.rmtree("temp")
+            print("[*] Cleaned up temporary files")
+    except Exception as e:
+        print(f"[!] Failed to clean up temp directory: {e}")
     
     print("\n[*] Zero-Day Provisioning Complete!")
 
