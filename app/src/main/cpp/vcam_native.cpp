@@ -1,5 +1,7 @@
 #include <jni.h>
 #include <android/log.h>
+#include <GLES2/gl2.h>
+#include <EGL/egl.h>
 
 // Dummy JNI_OnLoad function to satisfy build requirements
 JNIEXPORT void JNICALL JNI_OnLoad(JavaVM* vm, void* reserved) {
