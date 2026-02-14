@@ -9,6 +9,7 @@
 - Never rely on the system's default Gradle version in CI/CD. Always use gradle/actions/setup-gradle to pin a specific compatible version (e.g., 8.5).
 - Do NOT use ./gradlew. This project does not have a wrapper. Always use the system gradle command in CI/CD.
 - To prevent "Plugin not found" errors, always map the com.android.application plugin id to the com.android.tools.build:gradle artifact inside settings.gradle -> resolutionStrategy.
+- When using Xposed (de.robv.android.xposed), you MUST add maven { url "https://api.xposed.info/" } to the repository list in settings.gradle.
 
 ## 2. File Handling
 - **NEVER** use `../` (parent directory) traversal in Python/Aider commands on Windows. It causes `pathlib` crashes.
