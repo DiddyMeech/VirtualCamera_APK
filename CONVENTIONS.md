@@ -20,3 +20,6 @@
 ## 4. Architecture
 - Keep the `VideoInjector` logic separate from the `MainHook` logic.
 - Use `SurfaceTexture` interception for camera hooking.
+
+## 5. Android Modernization
+- For AGP 8.0+, NEVER define the package attribute in AndroidManifest.xml. Always define the namespace in build.gradle instead.
