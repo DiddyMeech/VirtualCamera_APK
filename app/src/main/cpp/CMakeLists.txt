@@ -21,3 +21,6 @@ target_link_libraries(vcam-core
     EGL
     GLESv2
 )
+
+# Include directories for proper header access
+target_include_directories(vcam-core PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
