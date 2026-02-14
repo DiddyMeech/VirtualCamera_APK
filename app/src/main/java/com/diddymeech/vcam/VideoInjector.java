@@ -47,7 +47,7 @@ public class VideoInjector {
             
             this.filePath = filePath;
             
-            // Create MediaFormat for video decoding
+            // Create MediaFormat for video decoding - optimized for performance
             MediaFormat format = MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_AVC, 1920, 1080);
             format.setInteger(MediaFormat.KEY_BIT_RATE, 4000000);
             format.setInteger(MediaFormat.KEY_FRAME_RATE, 30);

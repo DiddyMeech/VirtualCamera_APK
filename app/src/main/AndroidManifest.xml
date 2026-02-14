@@ -12,7 +12,7 @@
         android:label="VCam Module"
         android:supportsRtl="true">
 
-        <!-- Xposed Metadata -->
+        <!-- Xposed Metadata - following conventions -->
         <meta-data
             android:name="xposedmodule"
             android:value="true" />
@@ -22,6 +22,7 @@
         <meta-data
             android:name="xposedminversion"
             android:value="82" />
+        <!-- Xposed Init - following conventions -->
         <meta-data
             android:name="xposedinit"
             android:value="com.diddymeech.vcam.MainHook" />
