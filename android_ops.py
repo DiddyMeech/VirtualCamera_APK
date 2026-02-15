@@ -23,10 +23,10 @@ def download_module(url, filename):
         response.raise_for_status()
         
         # Create temp directory if it doesn't exist
-        os.makedirs("temp", exist_ok=True)
+        os.makedirs("/tmp/vcam_mods", exist_ok=True)
         
         # Save file to temp directory
-        filepath = os.path.join("temp", filename)
+        filepath = os.path.join("/tmp/vcam_mods", filename)
         with open(filepath, "wb") as f:
             f.write(response.content)
         
@@ -155,7 +155,7 @@ def provision_zero_day():
     print("\n[*] Step 3: Installing stealth modules...")
     
     # Define module URLs (using specific GitHub release URLs for stability)
-    modules = [
+    MODULES = [
         {
             "name": "LSposed",
             "url": "https://github.com/LSPosed/LSPosed/releases/latest/download/LSPosed-1.0.0-release.zip",
@@ -168,12 +168,12 @@ def provision_zero_day():
         },
         {
             "name": "Play Integrity Fix",
-            "url": "https://github.com/chenzhongtao/play-integrity-fix/releases/latest/download/play-integrity-fix-release.zip",
+            "url": "https://github.com/chiteroman/PlayIntegrityFix/releases/latest/download/PlayIntegrityFix-1.0.0-release.zip",
             "filename": "play-integrity-fix-zip"
         }
     ]
     
-    for module in modules:
+    for module in MODULES:
         print(f"   Downloading {module['name']}...")
         local_file = download_module(module["url"], module["filename"])
         
@@ -241,13 +241,40 @@ def provision_zero_day():
     # Cleanup temp directory at the end
     try:
         import shutil
-        if os.path.exists("temp"):
-            shutil.rmtree("temp")
+        if os.path.exists("/tmp/vcam_mods"):
+            shutil.rmtree("/tmp/vcam_mods")
             print("[*] Cleaned up temporary directory")
     except Exception as e:
         print(f"[!] Failed to clean up temp directory: {e}")
     
     print("\n[*] Zero-Day Provisioning Complete!")
+
+def clean_modules():
+    """Uninstall all Magisk modules and reboot device"""
+    print("[*] Cleaning all Magisk modules...")
+    
+    # Get list of installed modules
+    modules_list = run_adb("shell su -c ls /data/adb/modules")
+    if "No such file or directory" not in modules_list:
+        module_names = [line for line in modules_list.split('\n') if line.strip()]
+        
+        print(f"[+] Found {len(module_names)} modules to remove:")
+        for module_name in module_names:
+            if module_name.strip():
+                print(f"   - {module_name}")
+                
+                # Uninstall the module
+                uninstall_result = run_adb(f"shell su -c magisk --uninstall-module /data/adb/modules/{module_name}")
+                print(f"     Result: {uninstall_result}")
+    
+    # Remove all modules directory contents
+    remove_modules_dir = run_adb("shell su -c rm -rf /data/adb/modules/*")
+    print(f"[+] Removed module files: {remove_modules_dir}")
+    
+    # Reboot device
+    print("[*] Rebooting device...")
+    reboot_result = run_adb("reboot")
+    print(f"   Reboot initiated: {reboot_result}")
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
@@ -271,5 +298,7 @@ if __name__ == "__main__":
                 print("[*] Reboot required.")
         elif cmd == "provision":
             provision_zero_day()
+        elif cmd == "clean":
+            clean_modules()
     else:
-        print("Usage: python android_ops.py [scan|flash_module|provision]")
+        print("Usage: python android_ops.py [scan|flash_module|provision|clean]")
